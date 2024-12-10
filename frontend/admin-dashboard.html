@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="home-link">Home</a>
+            <h1>Admin Dashboard</h1>
+            <button id="logout-btn">Logout</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="users-section">
+            <h2>Manage Users</h2>
+            <button id="view-users-btn">View All Users</button>
+            <table id="users-table" border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="rooms-section">
+            <h2>Manage Rooms</h2>
+            <button id="view-rooms-btn">View All Rooms</button>
+            <form id="add-room-form">
+                <h3>Add Room</h3>
+                <input type="text" id="room-number" placeholder="Room Number" required>
+                <input type="text" id="room-type" placeholder="Type (e.g., Single)" required>
+                <input type="number" id="room-price" placeholder="Price" required>
+                <select id="room-availability">
+                    <option value="1">Available</option>
+                    <option value="0">Unavailable</option>
+                </select>
+                <button type="submit">Add Room</button>
+            </form>
+            <table id="rooms-table" border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Room Number</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Availability</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="reservations-section">
+            <h2>Manage Reservations</h2>
+            <button id="view-reservations-btn">View All Reservations</button>
+            <table id="reservations-table" border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Room ID</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="admin-dashboard.js">
+        
+    </script>
+    <footer>
+        <p>&copy; 2024 Hotel Reservation System</p>
+    </footer>
+</body>
+</html>
