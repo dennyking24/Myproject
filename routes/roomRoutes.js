@@ -59,4 +59,15 @@ router.delete('/:id', authenticateToken, checkAdminRole, async (req, res) => {
     }
 });
 
+router.delete('/rooms/:id', authenticateToken, checkAdminRole, async (req, res) => {
+    try {
+        await roomService.deleteRoom(req.params.id);
+        res.status(204).send(); // No content
+    } catch (error) {
+        console.error('Error deleting room:', error);
+        res.status(500).json({ error: 'Failed to delete room' });
+    }
+});
+
+
 module.exports = router;

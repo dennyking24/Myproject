@@ -49,4 +49,15 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+router.delete('/reservations/:id', authenticateToken, checkAdminRole, async (req, res) => {
+    try {
+        await reservationService.cancelReservation(req.params.id);
+        res.status(204).send(); 
+    } catch (error) {
+        console.error('Error deleting reservation:', error);
+        res.status(500).json({ error: 'Failed to delete reservation' });
+    }
+});
+
+
 module.exports = router;

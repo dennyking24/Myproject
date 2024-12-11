@@ -60,4 +60,15 @@ router.delete('/:id', authenticateToken, checkAdminRole, async (req, res) => {
     }
 });
 
+router.delete('/users/:id', authenticateToken, checkAdminRole, async (req, res) => {
+    try {
+        await userService.deleteUser(req.params.id);
+        res.status(204).send(); // No content
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ error: 'Failed to delete user' });
+    }
+});
+
+
 module.exports = router;
