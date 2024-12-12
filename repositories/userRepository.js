@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
-const BaseRepository = require('./baseRepository');
 const db = require('../db');
+const BaseRepository = require('./baseRepository');
 
 class UserRepository extends BaseRepository {
     constructor() {
@@ -23,6 +23,10 @@ class UserRepository extends BaseRepository {
 
     validatePassword(plainPassword, hashedPassword) {
         return bcrypt.compareSync(plainPassword, hashedPassword);
+    }
+
+    deleteUser(userId) {
+        return this.delete('DELETE FROM users WHERE id = ?', [userId]);
     }
 }
 

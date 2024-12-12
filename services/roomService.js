@@ -5,6 +5,10 @@ class RoomService {
         return roomRepository.getAllRooms();
     }
 
+    getAvailableRooms() {
+        return roomRepository.getAvailableRooms();
+    }
+
     addRoom(roomData) {
         return roomRepository.addRoom(roomData);
     }

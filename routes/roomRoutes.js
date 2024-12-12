@@ -3,12 +3,11 @@ const roomService = require('../services/roomService');
 const { authenticateToken, checkAdminRole } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// Get all available rooms (Public)
+// Get all available rooms (user)
 router.get('/available', async (req, res) => {
     try {
-        const rooms = await roomService.getAllRooms();
-        const availableRooms = rooms.filter((room) => room.availability === 1);
-        res.json(availableRooms);
+        const rooms = await roomService.getAvailableRooms();
+        res.status(200).json(rooms);
     } catch (error) {
         console.error('Error fetching available rooms:', error.message);
         res.status(500).json({ error: 'Failed to fetch available rooms' });
@@ -16,7 +15,7 @@ router.get('/available', async (req, res) => {
 });
 
 // Get all rooms (Admin only)
-router.get('/', authenticateToken, checkAdminRole, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const rooms = await roomService.getAllRooms();
         res.status(200).json(rooms);
@@ -50,24 +49,16 @@ router.put('/:id', authenticateToken, checkAdminRole, async (req, res) => {
 
 // Delete a room (Admin only)
 router.delete('/:id', authenticateToken, checkAdminRole, async (req, res) => {
+    const roomId = req.params.id;
     try {
-        await roomService.deleteRoom(req.params.id);
-        res.status(204).send();
+        await roomService.deleteRoom(roomId);
+        res.status(200).json({ message: 'Room deleted successfully' });
     } catch (error) {
         console.error('Error deleting room:', error.message);
         res.status(500).json({ error: 'Failed to delete room' });
     }
 });
 
-router.delete('/rooms/:id', authenticateToken, checkAdminRole, async (req, res) => {
-    try {
-        await roomService.deleteRoom(req.params.id);
-        res.status(204).send(); // No content
-    } catch (error) {
-        console.error('Error deleting room:', error);
-        res.status(500).json({ error: 'Failed to delete room' });
-    }
-});
 
 
 module.exports = router;

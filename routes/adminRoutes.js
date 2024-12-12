@@ -44,6 +44,7 @@ router.delete('/users/:id', authenticateToken, checkAdminRole, async (req, res) 
         res.status(500).json({ error: 'Failed to delete user' });
     }
 });
+
 router.delete('/rooms/:id', authenticateToken, checkAdminRole, async (req, res) => {
     try {
         await roomService.deleteRoom(req.params.id);

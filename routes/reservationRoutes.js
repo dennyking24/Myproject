@@ -1,6 +1,6 @@
 const express = require('express');
 const reservationService = require('../services/reservationService');
-const { authenticateToken } = require('../middleware/authMiddleware');
+const { authenticateToken, checkAdminRole } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Get user's reservations
@@ -26,6 +26,7 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 });
 
+
 // Update a reservation
 router.put('/:id', authenticateToken, async (req, res) => {
     const { status } = req.body;
@@ -48,8 +49,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-router.delete('/reservations/:id', authenticateToken, checkAdminRole, async (req, res) => {
+router.delete('/reservations/:id', authenticateToken,checkAdminRole, async (req, res) => {
     try {
         await reservationService.cancelReservation(req.params.id);
         res.status(204).send(); 

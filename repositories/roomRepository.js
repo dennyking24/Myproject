@@ -1,7 +1,10 @@
 const db = require('../db');
 const BaseRepository = require('./baseRepository');
 
-class RoomRepository {
+class RoomRepository  extends BaseRepository {
+    constructor() {
+        super(db);
+    }
     getAllRooms() {
         return new Promise((resolve, reject) => {
             db.all('SELECT * FROM rooms', (err, rows) => {
@@ -9,6 +12,10 @@ class RoomRepository {
                 resolve(rows);
             });
         });
+    }
+
+    getAvailableRooms() {
+        return this.fetchAll('SELECT * FROM rooms WHERE availability = 1');
     }
 
     addRoom(roomData) {
