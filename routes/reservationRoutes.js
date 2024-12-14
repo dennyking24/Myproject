@@ -14,6 +14,20 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/reservations', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming user ID is available from the token
+        const reservations = await reservationService.getReservationsByUser(userId);
+        console.log('Reservations:', reservations); // Log the response
+        res.status(200).json(reservations);
+    } catch (error) {
+        console.error('Error fetching reservations:', error.message);
+        res.status(500).json({ error: 'Failed to fetch reservations' });
+    }
+});
+
+
+
 // Create a reservation
 router.post('/', authenticateToken, async (req, res) => {
     const { roomId, checkIn, checkOut } = req.body;

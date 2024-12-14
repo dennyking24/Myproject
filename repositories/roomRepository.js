@@ -14,9 +14,19 @@ class RoomRepository  extends BaseRepository {
         });
     }
 
-    getAvailableRooms() {
-        return this.fetchAll('SELECT * FROM rooms WHERE availability = 1');
+    getAvailableRooms(filters = {}) {
+        const { type, maxPrice } = filters;
+        let query = 'SELECT * FROM rooms WHERE availability = 1';
+        const params = [];
+
+        if (type) {
+            query += ' AND type = ?';
+            params.push(type);
+        }
+
+        return this.fetchAll(query, params);
     }
+
 
     addRoom(roomData) {
         const { roomNumber, type, price, availability } = roomData;

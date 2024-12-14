@@ -31,6 +31,24 @@
                 </thead>
                 <tbody></tbody>
             </table>
+
+            <!-- Update User Modal -->
+<div id="update-user-modal" style="display: none;">
+    <h3>Update User</h3>
+    <form id="update-user-form">
+        <input type="text" id="update-username" placeholder="Username" required>
+        <input type="email" id="update-email" placeholder="Email" required>
+        <select id="update-role">
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+        </select>
+        <button type="submit">Update</button>
+        <button type="button" onclick="closeUserModal()">Cancel</button>
+    </form>
+</div>
+
+
+
         </section>
 
         <section id="rooms-section">
@@ -60,6 +78,22 @@
                 </thead>
                 <tbody></tbody>
             </table>
+            
+            <!-- Update Room Modal -->
+<div id="update-room-modal" style="display: none;">
+    <h3>Update Room</h3>
+    <form id="update-room-form">
+        <input type="text" id="update-room-number" placeholder="Room Number" required>
+        <input type="text" id="update-room-type" placeholder="Type (e.g., Single)" required>
+        <input type="number" id="update-room-price" placeholder="Price" required>
+        <select id="update-room-availability">
+            <option value="1">Available</option>
+            <option value="0">Unavailable</option>
+        </select>
+        <button type="submit">Update</button>
+        <button type="button" onclick="closeRoomModal()">Cancel</button>
+    </form>
+</div>
         </section>
 
         <section id="reservations-section">
@@ -82,9 +116,8 @@
         </section>
     </main>
 
-    <script src="admin-dashboard.js">
-        
-    </script>
+    <script src="admin-dashboard.js"></script>
+
     <footer>
         <p>&copy; 2024 Hotel Reservation System</p>
     </footer>

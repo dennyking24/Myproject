@@ -32,7 +32,7 @@ db.serialize(() => {
         }
     });
 
-    // Rooms table (optional if needed later)
+    // Rooms table 
     db.run(`
         CREATE TABLE IF NOT EXISTS rooms (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,6 +49,7 @@ db.serialize(() => {
         }
     });
 
+    //Reservation table
     db.run(`
         CREATE TABLE IF NOT EXISTS reservations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

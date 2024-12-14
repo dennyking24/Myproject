@@ -15,28 +15,49 @@
     </nav>
 </header>
 
-<div id="available-rooms-section">
-    <h3>Select a Room</h3>
-    <label for="available-rooms">Available Rooms:</label>
-    <select id="available-rooms"></select>
+<!-- Filter Section for Available Rooms -->
+<div id="filter-section">
+    <h3>Filter Available Rooms</h3>
+    <label for="room-type">Room Type:</label>
+    <select id="room-type">
+        <option value="">All</option>
+        <option value="single">Single</option>
+        <option value="double">Double</option>
+        <option value="suite">Suite</option>
+    </select>
+    <button id="filter-btn">Apply Filter</button>
 </div>
 
+<!-- Table to Display Available Rooms -->
+<table id="available-rooms-table" border="1">
+    <thead>
+        <tr>
+            <th>Room Number</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Dynamically populated rows -->
+    </tbody>
+</table>
 
+<!-- Booking Modal -->
+<div id="booking-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; border: 1px solid #ccc; padding: 20px; z-index: 1000;">
+    <h3>Book Room</h3>
+    <label for="booking-check-in">Check-In Date:</label>
+    <input type="date" id="booking-check-in" required>
+    <label for="booking-check-out">Check-Out Date:</label>
+    <input type="date" id="booking-check-out" required>
+    <button id="confirm-booking-btn">Confirm</button>
+    <button id="cancel-booking-btn">Cancel</button>
+</div>
+<div id="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
+
+<!-- Reservation Management Section -->
 <div id="reservation-form">
     <h3>Manage Reservations</h3>
-    
-    <!-- Make a Reservation -->
-    <h4>Make a Reservation</h4>
-    <label for="room-id">Room ID:</label>
-    <input type="number" id="room-id">
-    <label for="check-in-date">Check-In Date:</label>
-    <input type="date" id="check-in-date">
-    <label for="check-out-date">Check-Out Date:</label>
-    <input type="date" id="check-out-date">
-    <button id="make-reservation-btn">Make Reservation</button>
-    
-    <!-- View Reservations -->
-    <h4>View Reservations</h4>
     <button id="view-reservations-btn">View My Reservations</button>
     <table id="reservations-table" border="1" style="margin-top: 10px;">
         <thead>
@@ -54,11 +75,75 @@
 </div>
 
 <script>
-    // Create a Reservation
-    document.getElementById('make-reservation-btn').addEventListener('click', async () => {
-        const roomId = document.getElementById('room-id').value;
-        const checkIn = document.getElementById('check-in-date').value;
-        const checkOut = document.getElementById('check-out-date').value;
+    // Global variable to store the selected room ID
+    let selectedRoomId = null;
+
+    /******************* Room Filtering and Display *******************/
+    document.getElementById('filter-btn').addEventListener('click', async () => {
+        const type = document.getElementById('room-type').value;
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('You must be logged in to search for rooms.');
+                return;
+            }
+
+            // Fetch available rooms based on the selected filter
+            const response = await fetch(`/api/rooms/available?type=${type}`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+
+            if (response.ok) {
+                const rooms = await response.json();
+                populateAvailableRoomsTable(rooms);
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+            }
+        } catch (err) {
+            console.error('Error fetching filtered rooms:', err);
+        }
+    });
+
+    function populateAvailableRoomsTable(rooms) {
+        const tbody = document.querySelector('#available-rooms-table tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+
+        if (rooms.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="4">No rooms available</td>`;
+            tbody.appendChild(row);
+            return;
+        }
+
+        rooms.forEach((room) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${room.room_number}</td>
+                <td>${room.type}</td>
+                <td>$${room.price}</td>
+                <td><button onclick="openBookingModal(${room.id})">Book</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    /******************* Booking Modal Handling *******************/
+    function openBookingModal(roomId) {
+        selectedRoomId = roomId; // Store the selected room ID
+        document.getElementById('booking-modal').style.display = 'block';
+        document.getElementById('modal-overlay').style.display = 'block';
+    }
+
+    document.getElementById('confirm-booking-btn').addEventListener('click', async () => {
+        const checkIn = document.getElementById('booking-check-in').value;
+        const checkOut = document.getElementById('booking-check-out').value;
+
+        if (!checkIn || !checkOut) {
+            alert('Please select both check-in and check-out dates.');
+            return;
+        }
 
         try {
             const response = await fetch('/api/reservations', {
@@ -67,28 +152,38 @@
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
-                body: JSON.stringify({ roomId, checkIn, checkOut }),
+                body: JSON.stringify({ roomId: selectedRoomId, checkIn, checkOut }),
             });
 
             if (response.ok) {
-                alert('Reservation successful!');
-                fetchReservations(); // Refresh the reservations list
+                alert('Room booked successfully!');
+                closeBookingModal();
+                document.getElementById('view-reservations-btn').click();
             } else {
                 const error = await response.json();
                 alert(`Error: ${error.message}`);
             }
         } catch (err) {
-            alert('Failed to make reservation.');
+            console.error('Error booking room:', err);
         }
     });
 
-    // View Reservations
+    document.getElementById('cancel-booking-btn').addEventListener('click', closeBookingModal);
+    document.getElementById('modal-overlay').addEventListener('click', closeBookingModal);
+
+    function closeBookingModal() {
+        document.getElementById('booking-modal').style.display = 'none';
+        document.getElementById('modal-overlay').style.display = 'none';
+        document.getElementById('booking-check-in').value = '';
+        document.getElementById('booking-check-out').value = '';
+        selectedRoomId = null;
+    }
+
+    /******************* Reservation Management *******************/
     document.getElementById('view-reservations-btn').addEventListener('click', async () => {
         try {
             const response = await fetch('/api/reservations', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
             });
 
             if (response.ok) {
@@ -99,11 +194,10 @@
                 alert(`Error: ${error.message}`);
             }
         } catch (err) {
-            alert('Failed to fetch reservations.');
+            console.error('Failed to fetch reservations:', err);
         }
     });
 
-    // Populate Reservations Table
     function populateReservationsTable(reservations) {
         const tbody = document.querySelector('#reservations-table tbody');
         tbody.innerHTML = ''; // Clear existing rows
@@ -125,10 +219,14 @@
         });
     }
 
-    // Update a Reservation
     async function updateReservation(reservationId) {
         const checkIn = prompt('Enter new Check-In Date (YYYY-MM-DD):');
         const checkOut = prompt('Enter new Check-Out Date (YYYY-MM-DD):');
+
+        if (!checkIn || !checkOut) {
+            alert('Both dates are required.');
+            return;
+        }
 
         try {
             const response = await fetch(`/api/reservations/${reservationId}`, {
@@ -142,17 +240,16 @@
 
             if (response.ok) {
                 alert('Reservation updated successfully!');
-                fetchReservations();
+                document.getElementById('view-reservations-btn').click(); // Refresh reservations
             } else {
                 const error = await response.json();
                 alert(`Error: ${error.message}`);
             }
         } catch (err) {
-            alert('Failed to update reservation.');
+            console.error('Error updating reservation:', err);
         }
     }
 
-    // Cancel a Reservation
     async function cancelReservation(reservationId) {
         try {
             const response = await fetch(`/api/reservations/${reservationId}`, {
@@ -164,52 +261,25 @@
 
             if (response.ok) {
                 alert('Reservation canceled successfully!');
-                fetchReservations();
+                document.getElementById('view-reservations-btn').click(); // Refresh reservations
             } else {
                 const error = await response.json();
                 alert(`Error: ${error.message}`);
             }
         } catch (err) {
-            alert('Failed to cancel reservation.');
+            console.error('Error canceling reservation:', err);
         }
     }
 
-    // Logout functionality
-document.getElementById('logout-btn').addEventListener('click', () => {
-    localStorage.clear();
-    window.location.href = 'login.html';
-});
-
-
-// Fetch and populate available rooms
-async function fetchAvailableRooms() {
-    try {
-        const response = await fetch('/api/rooms/available');
-        if (response.ok) {
-            const rooms = await response.json();
-            populateAvailableRooms(rooms);
-        } else {
-            alert('Failed to fetch available rooms.');
-        }
-    } catch (error) {
-        console.error('Error fetching available rooms:', error);
-    }
-}
-
-
-function populateAllRooms(rooms) {
-    const availableRoomsDropdown = document.getElementById('available-rooms');
-    availableRoomsDropdown.innerHTML = ''; // Clear existing options
-    rooms.forEach((room) => {
-        const option = document.createElement('option');
-        option.value = room.id;
-        option.textContent = `Room ${room.room_number} - ${room.type} ($${room.price})`;
-        availableRoomsDropdown.appendChild(option);
+    /******************* Logout Functionality *******************/
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = 'login.html';
     });
-}
 
-// Call this function when the page loads
-document.addEventListener('DOMContentLoaded', fetchAllRooms);
-
-
+    
 </script>
+</body>
+</html>
+
+

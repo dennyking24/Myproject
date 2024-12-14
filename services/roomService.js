@@ -5,9 +5,10 @@ class RoomService {
         return roomRepository.getAllRooms();
     }
 
-    getAvailableRooms() {
-        return roomRepository.getAvailableRooms();
+    getAvailableRooms(filters = {}) {
+        return roomRepository.getAvailableRooms({ type: filters.type });
     }
+    
 
     addRoom(roomData) {
         return roomRepository.addRoom(roomData);

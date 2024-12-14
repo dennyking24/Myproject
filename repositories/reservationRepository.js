@@ -21,12 +21,14 @@ class ReservationRepository extends BaseRepository {
 
     getReservationsByUser(userId) {
         return new Promise((resolve, reject) => {
-            db.all('SELECT * FROM reservations WHERE user_id = ?', [userId], (err, rows) => {
+            // Query to get reservations for a specific userId
+            db.all('SELECT * FROM reservations WHERE userId = ?', [userId], (err, rows) => {
                 if (err) return reject(err);
                 resolve(rows);
             });
         });
     }
+    
 
     getAllReservations() {
         return new Promise((resolve, reject) => {

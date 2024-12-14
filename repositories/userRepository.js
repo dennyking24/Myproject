@@ -28,6 +28,19 @@ class UserRepository extends BaseRepository {
     deleteUser(userId) {
         return this.delete('DELETE FROM users WHERE id = ?', [userId]);
     }
+       // Update a user's details
+        updateUser(userId, { username, email, password, role }) {
+        const query = `
+            UPDATE users
+            SET username = ?, email = ?, ${password ? 'password = ?,' : ''} role = ?
+            WHERE id = ?
+        `;
+        const params = password
+            ? [username, email, password, role, userId]
+            : [username, email, role, userId];
+        return this.update(query, params);
+    }
+    
 }
 
 module.exports = new UserRepository();

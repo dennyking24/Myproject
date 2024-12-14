@@ -183,3 +183,51 @@ footer {
 footer p {
     margin: 0;
 }
+
+#booking-modal {
+    width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#booking-modal h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+#booking-modal label {
+    display: block;
+    margin-top: 10px;
+}
+
+#booking-modal input {
+    width: calc(100% - 20px);
+    margin: 5px 0;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#booking-modal button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#confirm-booking-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+#cancel-booking-btn {
+    background-color: #dc3545;
+    color: white;
+    margin-top: 5px;
+}
+
+#modal-overlay {
+    display: none;
+}

@@ -22,25 +22,6 @@ class UserService {
         }
     }
 
-    // Update user details
-    async updateUser(userId, { username, email, password }) {
-        try {
-            let hashedPassword = null;
-            if (password) {
-                hashedPassword = bcrypt.hashSync(password, 10);
-            }
-
-            return await userRepository.updateUser(userId, {
-                username,
-                email,
-                password: hashedPassword,
-            });
-        } catch (error) {
-            console.error('Error updating user:', error.message);
-            throw new Error('Unable to update user');
-        }
-    }
-
     // Delete a user
     async deleteUser(userId) {
         try {
@@ -48,6 +29,19 @@ class UserService {
         } catch (error) {
             console.error('Error deleting user:', error.message);
             throw new Error('Unable to delete user');
+        }
+    }
+
+     // Update a user's details
+     async updateUser(userId, userDetails) {
+        try {
+            if (userDetails.password) {
+                userDetails.password = bcrypt.hashSync(userDetails.password, 10);
+            }
+            return await userRepository.updateUser(userId, userDetails);
+        } catch (error) {
+            console.error('Error updating user:', error.message);
+            throw new Error('Unable to update user');
         }
     }
 }

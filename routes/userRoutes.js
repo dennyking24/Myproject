@@ -26,4 +26,32 @@ router.delete('/:id', authenticateToken, checkAdminRole, async (req, res) => {
     }
 });
 
+// Update a user (Admin only)
+router.put('/:id', authenticateToken, checkAdminRole, async (req, res) => {
+    const { id } = req.params;
+    const { username, email, password, role } = req.body;
+
+    try {
+        const updatedUser = await userService.updateUser(id, { username, email, password, role });
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error('Error updating user:', error.message);
+        res.status(500).json({ error: 'Failed to update user' });
+    }
+});
+
+// Update user details
+router.put('/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { username, email, password } = req.body;
+
+    try {
+        await userService.updateUser(id, { username, email, password });
+        res.status(200).json({ message: 'User updated successfully' });
+    } catch (error) {
+        console.error('Error updating user:', error.message);
+        res.status(500).json({ error: 'Unable to update user' });
+    }
+});
+
 module.exports = router;

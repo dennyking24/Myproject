@@ -3,16 +3,22 @@ const roomService = require('../services/roomService');
 const { authenticateToken, checkAdminRole } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// Get all available rooms (user)
+// Get available rooms with filters
+// Remove authentication for this route
 router.get('/available', async (req, res) => {
     try {
-        const rooms = await roomService.getAvailableRooms();
+        const { type, maxPrice } = req.query;
+        const rooms = await roomService.getAvailableRooms({ type });
         res.status(200).json(rooms);
     } catch (error) {
         console.error('Error fetching available rooms:', error.message);
         res.status(500).json({ error: 'Failed to fetch available rooms' });
     }
 });
+
+
+
+
 
 // Get all rooms (Admin only)
 router.get('/', authenticateToken, async (req, res) => {
@@ -56,6 +62,16 @@ router.delete('/:id', authenticateToken, checkAdminRole, async (req, res) => {
     } catch (error) {
         console.error('Error deleting room:', error.message);
         res.status(500).json({ error: 'Failed to delete room' });
+    }
+});
+
+router.delete('/:id', authenticateToken, checkAdminRole, async (req, res) => {
+    try {
+        await userService.deleteUser(req.params.id);
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error.message);
+        res.status(500).json({ error: 'Failed to delete user' });
     }
 });
 

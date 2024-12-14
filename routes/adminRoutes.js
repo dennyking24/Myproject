@@ -2,6 +2,8 @@ const express = require('express');
 const { authenticateToken, checkAdminRole } = require('../middleware/authMiddleware');
 const adminService = require('../services/adminService');
 const reservationService = require('../services/reservationService');
+const userService = require('../services/userService');
+
 const router = express.Router();
 
 // View all users
@@ -11,6 +13,19 @@ router.get('/users', authenticateToken, checkAdminRole, async (req, res) => {
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+// Update a user
+router.put('/users/:id', authenticateToken, checkAdminRole, async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const userDetails = req.body;
+        await userService.updateUser(userId, userDetails);
+        res.status(200).json({ message: 'User updated successfully' });
+    } catch (error) {
+        console.error('Error updating user:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -35,13 +50,15 @@ router.delete('/reservations/:id', authenticateToken, checkAdminRole, async (req
     }
 });
 
+// Delete a user by ID
 router.delete('/users/:id', authenticateToken, checkAdminRole, async (req, res) => {
     try {
-        await userService.deleteUser(req.params.id);
-        res.status(204).send(); 
+        const userId = req.params.id;
+        await userService.deleteUser(userId);
+        res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-        console.error('Error deleting user:', error);
-        res.status(500).json({ error: 'Failed to delete user' });
+        console.error('Error deleting user:', error.message);
+        res.status(500).json({ error: error.message });
     }
 });
 
